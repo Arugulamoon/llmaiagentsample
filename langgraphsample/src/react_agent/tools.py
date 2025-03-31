@@ -62,7 +62,7 @@ def _parse_page(page: BeautifulSoup, url: str) -> dict:
     # ie give ai entry points to do either an activity query or a date query
     # - "What are available activities at location X for date Y?"
     # - "What are times for activity X at location Y?"
-    categories = []
+    time_blocks = []
     for table in page.find_all("table"):
         # determine category (eg Swim) and time blocks (eg March 11 to May 2)
         parsedCaption = _parse_table_caption(table.find("caption"))
@@ -74,14 +74,14 @@ def _parse_page(page: BeautifulSoup, url: str) -> dict:
         activities = _parse_rows(table.find("tbody"), location, days)
 
         # save
-        categories.append({
+        time_blocks.append({
             "category": parsedCaption.get("category"),
             "time_block_start": parsedCaption.get("time_block_start"),
             "time_block_end": parsedCaption.get("time_block_end"),
             "activities": activities,
         })
 
-    return { "location": location, "categories": categories, "url": url }
+    return { "location": location, "time_blocks": time_blocks, "url": url }
 
 def _parse_table_caption(caption: BeautifulSoup) -> dict:
     splitted_caption = _clean(caption.text).split(" - ")
@@ -112,24 +112,29 @@ def _parse_table_caption(caption: BeautifulSoup) -> dict:
             return {}
 
 def _parse_table_columns(thead: BeautifulSoup) -> list:
+    tr = thead.find("tr")
+    if tr == None:
+        return []
     days = [_clean(th.text) for th in thead.find("tr").find_all("th")]
-    if len(days) == 8:
+    if len(days) == 8: # TODO: Make more robust
         days.remove("")
     return days
 
 def _parse_rows(tbody: BeautifulSoup, location: str, days: list) -> list:
     activity_time_slots = []
     for tr in tbody.find_all("tr"):
-        activity = _clean(tr.find("th").text)
-        for i, td in enumerate(tr.find_all("td")):
-            time_slots = _clean(td.text) # TODO: further split times?
-            if time_slots != "n/a":
-                activity_time_slots.append({
-                    "location": location,
-                    "activity": activity,
-                    "day": days[i],
-                    "time_slots": time_slots.replace("Noon", "12pm"),
-                })
+        th = tr.find("th")
+        if th != None:
+            activity = _clean(th.text)
+            for i, td in enumerate(tr.find_all("td")):
+                time_slots = _clean(td.text) # TODO: further split times?
+                if time_slots != "n/a":
+                    activity_time_slots.append({
+                        "location": location,
+                        "activity": activity,
+                        "day": days[i],
+                        "time_slots": time_slots.replace("Noon", "12pm"),
+                    })
     return activity_time_slots
 
 @tool
@@ -158,7 +163,7 @@ async def get_preschool_swim_times(
     docs = []
     for d in data:
         docs.append(Document(
-            page_content=str(d["categories"]),
+            page_content=str(d["time_blocks"]),
             metadata={
                 "title": d["location"], # TODO: Inform AI of title to have it better categorize docs?
             }
