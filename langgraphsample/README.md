@@ -81,6 +81,8 @@ ANTHROPIC_API_KEY=your-api-key
 
 ## Install dependencies
 
+Prerequisites include `python3`, `pip`, `make` and `langgraph`.
+
 ```bash
 python -m pip install .
 ```
