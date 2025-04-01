@@ -1,7 +1,7 @@
 # Work Log
 
 ## Monday, March 24th, 2025
-* Interview with Vittorio Cellucci; learned of LLM AI Agents, LangGraph and Ollama
+* Interview; learned of LLM AI Agents, LangGraph and Ollama
 * Followed up by reading on LLM AI Agents and LangChain
   * Developed appreciation for possibilities of the technology and how powerful it can be
   * Saw some similarities between LangChain and Kubernetes Operator projects
