@@ -22,6 +22,12 @@ from langchain import hub
 
 from react_agent.configuration import Configuration
 
+# TODO: Explore whether modeling tool off of retrievers from
+# ref: https://github.com/langchain-ai/retrieval-agent-template/blob/main/src/retrieval_graph/retrieval.py
+# would be appropriate
+# As it is, poc here uses an inmemory vectorstore, so when moving to a service,
+# would appear to be very appropriate then
+
 @tool
 async def get_preschool_swim_times(
     query: str, *, config: Annotated[RunnableConfig, InjectedToolArg]
@@ -61,6 +67,8 @@ async def get_preschool_swim_times(
     vector_store = InMemoryVectorStore(embeddings)
     _ = vector_store.add_documents(documents=documents)
 
+    # TODO: Explore Metadata filtering
+    # ref: https://python.langchain.com/docs/concepts/vectorstores/#metadata-filtering
     retrieved_docs = vector_store.similarity_search(query)
     docs_content = "\n\n".join(doc.page_content for doc in retrieved_docs)
 
@@ -85,19 +93,20 @@ def _parse_page(page: BeautifulSoup, url: str) -> dict:
         # determine category (eg Swim) and time blocks (eg March 11 to May 2)
         parsedCaption = _parse_table_caption(table.find("caption"))
 
-        # establish days of the week as defined by table columns
-        days = _parse_table_columns(table.find("thead"))
+        if "swim" in parsedCaption.get("category").lower():
+            # establish days of the week as defined by table columns
+            days = _parse_table_columns(table.find("thead"))
 
-        # determine activities (eg Preschool swim) and their schedule time slot
-        activities = _parse_rows(table.find("tbody"), location, days)
+            # determine activities (eg Preschool swim) and their schedule time slot
+            activities = _parse_rows(table.find("tbody"), location, days)
 
-        # save
-        time_blocks.append({
-            "category": parsedCaption.get("category"),
-            "time_block_start": parsedCaption.get("time_block_start"),
-            "time_block_end": parsedCaption.get("time_block_end"),
-            "activities": activities,
-        })
+            # save
+            time_blocks.append({
+                "category": parsedCaption.get("category"),
+                "time_block_start": parsedCaption.get("time_block_start"),
+                "time_block_end": parsedCaption.get("time_block_end"),
+                "activities": activities,
+            })
 
     return { "location": location, "time_blocks": time_blocks, "url": url }
 
@@ -144,15 +153,16 @@ def _parse_rows(tbody: BeautifulSoup, location: str, days: list) -> list:
         th = tr.find("th")
         if th != None:
             activity = _clean(th.text)
-            for i, td in enumerate(tr.find_all("td")):
-                time_slots = _clean(td.text) # TODO: further split times?
-                if time_slots != "n/a":
-                    activity_time_slots.append({
-                        "location": location,
-                        "activity": activity,
-                        "day": days[i],
-                        "time_slots": time_slots.replace("Noon", "12pm"),
-                    })
+            if "preschool swim" in activity.lower():
+                for i, td in enumerate(tr.find_all("td")):
+                    time_slots = _clean(td.text) # TODO: further split times?
+                    if time_slots != "n/a":
+                        activity_time_slots.append({
+                            "location": location,
+                            "activity": activity,
+                            "day": days[i],
+                            "time_slots": time_slots.replace("Noon", "12pm"),
+                        })
     return activity_time_slots
 
 def _clean(s: str) -> str:

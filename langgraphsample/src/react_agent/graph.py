@@ -19,6 +19,10 @@ from react_agent.utils import load_chat_model
 
 # Define the function that calls the model
 
+# TODO: Consider the Retrieval Agent Template for enabling the LLM
+# to refine the query as it proceeds. This would allow it to become
+# more precise about which rec facility was specified and which day/date
+# ref: https://github.com/langchain-ai/retrieval-agent-template/blob/main/src/retrieval_graph/graph.py
 
 async def call_model(
     state: State, config: RunnableConfig

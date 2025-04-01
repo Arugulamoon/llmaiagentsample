@@ -106,7 +106,7 @@ langgraph dev
 From the web client, in the bottom left, type in the following messages to see the use cases:
   * Memory ("hi, my name is nicholas" and then "what is my name?")
   * Search tool usage ("what was the score in the last Edmonton Oilers NHL hockey game?")
-  * Ottawa Recreation Facility activity search ("when is the next preschool swim?")
+  * Ottawa Recreation Facility activity search ("when is the next preschool swim at Walter Baker?")
 
 ## How to customize
 
