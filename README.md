@@ -40,9 +40,9 @@ Unit tests were implemented around the custom html parsing code. Subsequent TODO
 
 ### Well-structured, maintainable, and readable code.
 
-LangGraph looks to be a good next step with LangChain, in terms of better structuring an LLM AI Agent project (ie separate files for `config`, `graph`, `prompts`, `state` and `tools`). Much of the material I followed before encountering the LangGraph Templates spoke of these components, but merged them into one file. Workable code to showcase things functioning, but not particularly effective in being well-structured and maintainable long-term.
+LangGraph looks to be a good next step with LangChain, in terms of better structuring an LLM AI Agent project (ie separate packages for `config`, `graph`, `prompts`, `state` and `tools`). Much of the material I followed before encountering the LangGraph Templates, spoke of these components, but merged them into one file. Workable code to showcase things functioning, but not particularly effective in being well-structured and maintainable long-term.
 
-I spent more time kicking the tires on LangChain elements and building out a proof-of-concept, that by the time I got to looking at code structure, I appreciated seeing it addressed within the LangGraph Template. I can see the need to break custom tools out into independent packages, but otherwise, the separate files is good enough for now.
+I spent more time kicking the tires on LangChain elements and building out a proof-of-concept, that by the time I got to looking at code structure, I appreciated seeing it addressed within the LangGraph Template. I can see the need to break custom tools out into independent packages.
 
 ### List of resources used in the construction of your solution. E.g., articles, tutorials, tools, references, etc.
 
@@ -85,7 +85,7 @@ At first, hardcoded queries into program execution. Eventually used LangGraph St
 
 ### Add support for multiple tool integrations.
 
-The LangGraph template comes with a good tools entrypoint for adding multiple. Subsequent TODO item to move preschool swim tool to its own package (perhaps a tools package) and better enable more tools to be added via independent packages instead of all going into `src/react_agent/tools.py`.
+The LangGraph template comes with a good tools entrypoint for adding multiple. Subsequent TODO item to move preschool swim tool to its own package.
 
 ### Allow users to configure or extend the chatbot with additional tools.
 

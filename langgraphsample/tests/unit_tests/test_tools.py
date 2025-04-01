@@ -1,17 +1,17 @@
 from bs4 import BeautifulSoup
-from react_agent import tools
+from react_agent import ottawarec
 
 DAYS_OF_THE_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 # Clean
 def test_clean():
-  assert tools._clean("") == ""
-  assert tools._clean("foo") == "foo"
-  assert tools._clean("  foo  ") == "foo"
-  assert tools._clean("foo&nbsp;bar") == "foo bar"
-  assert tools._clean("foo\xa0bar") == "foo bar"
-  assert tools._clean("foo\n") == "foo"
-  assert tools._clean("\tfoo") == "foo"
+  assert ottawarec._clean("") == ""
+  assert ottawarec._clean("foo") == "foo"
+  assert ottawarec._clean("  foo  ") == "foo"
+  assert ottawarec._clean("foo&nbsp;bar") == "foo bar"
+  assert ottawarec._clean("foo\xa0bar") == "foo bar"
+  assert ottawarec._clean("foo\n") == "foo"
+  assert ottawarec._clean("\tfoo") == "foo"
 
 # Parse Table Caption
 # Golang-style table driven test
@@ -51,22 +51,22 @@ def test_parse_table_caption():
     },
   ]
   for test in tests:
-    assert tools._parse_table_caption(BeautifulSoup(
+    assert ottawarec._parse_table_caption(BeautifulSoup(
       markup=test["input"],
       features="html.parser",
     )) == test["want"]
 
 # Parse Table Columns
 def test_parse_table_columns_empty():
-  assert tools._parse_table_columns(BeautifulSoup(
+  assert ottawarec._parse_table_columns(BeautifulSoup(
     markup="<thead></thead>",
     features="html.parser",
   )) == []
-  assert tools._parse_table_columns(BeautifulSoup(
+  assert ottawarec._parse_table_columns(BeautifulSoup(
     markup="<thead><tr></tr></thead>",
     features="html.parser",
   )) == []
-  assert tools._parse_table_columns(BeautifulSoup(
+  assert ottawarec._parse_table_columns(BeautifulSoup(
     markup="<thead><tr><th></th></tr></thead>",
     features="html.parser",
   )) == [""]
@@ -76,14 +76,14 @@ def test_parse_table_columns_no_blank_first_col():
     markup="<thead><tr><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr></thead>",
     features="html.parser",
   )
-  assert tools._parse_table_columns(thead) == DAYS_OF_THE_WEEK
+  assert ottawarec._parse_table_columns(thead) == DAYS_OF_THE_WEEK
 
 def test_parse_table_columns_blank_first_col():
   thead = BeautifulSoup(
     markup="<thead><tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr></thead>",
     features="html.parser",
   )
-  assert tools._parse_table_columns(thead) == DAYS_OF_THE_WEEK
+  assert ottawarec._parse_table_columns(thead) == DAYS_OF_THE_WEEK
 
 # Parse Rows
 def test_parse_rows():
@@ -138,7 +138,7 @@ def test_parse_rows():
     },
   ]
   for test in tests:
-    assert tools._parse_rows(BeautifulSoup(
+    assert ottawarec._parse_rows(BeautifulSoup(
       markup=test["input"],
       features="html.parser",
     ), "mylocation", DAYS_OF_THE_WEEK) == test["want"]
@@ -205,7 +205,7 @@ def test_parse_page():
   </table>
   </html>
   """
-  parsedPage = tools._parse_page(BeautifulSoup(
+  parsedPage = ottawarec._parse_page(BeautifulSoup(
     markup=page,
     features="html.parser",
   ), "myurl")

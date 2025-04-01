@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, fields
-from typing import Annotated, Optional
+from typing import List, Annotated, Optional
 
 from langchain_core.runnables import RunnableConfig, ensure_config
 
 from react_agent import prompts
 
+# Default configuration value
+OTT_REC_FACILITY_URLS = [
+    "https://ottawa.ca/en/recreation-and-parks/facilities/place-listing/walter-baker-sports-centre",
+    "https://ottawa.ca/en/recreation-and-parks/facilities/place-listing/minto-recreation-complex-barrhaven",
+]
 
 @dataclass(kw_only=True)
 class Configuration:
@@ -34,6 +39,13 @@ class Configuration:
         default=10,
         metadata={
             "description": "The maximum number of search results to return for each search query."
+        },
+    )
+
+    ott_rec_facility_urls: List[str] = field(
+        default_factory=lambda: OTT_REC_FACILITY_URLS,
+        metadata={
+            "description": "The urls for the Ottawa recreation facilities to be referenced for each query."
         },
     )
 
